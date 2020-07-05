@@ -1,0 +1,15 @@
+{
+  "name": "docebo-test-frontend",
+  "version": "1.0.0",
+  "description": "Docebo's frontend test",
+  "scripts": {
+    "sass:compile": "node-sass ./sass -o ./css",
+    "sass:watch": "node-sass -w ./sass -o ./css"
+  },
+  "author": "Stefano Borzoni",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "node-sass": "^4.14.1"
+  }
+}

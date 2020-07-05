@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  dfe_node:
+    image: node:10
+    container_name: dfe_node
+    user: "${DOCKER_LOCAL_USER:-1000}:${DOCKER_LOCAL_GROUP:-1000}"
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html

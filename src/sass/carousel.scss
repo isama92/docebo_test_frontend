@@ -50,10 +50,16 @@ $card-height: 25rem;
             // to show shadow and collection css
             padding-bottom: 1rem;
 
-            // hide scrollbar
+            // hide scrollbar on chrome
             &::-webkit-scrollbar {
                 display: none;
             }
+
+            // hide scrollbar on IE 11
+            -ms-overflow-style: none;
+
+            // hide scrollbar on Firefox
+            scrollbar-width: none;
 
             .carousel__card {
                 position: relative;

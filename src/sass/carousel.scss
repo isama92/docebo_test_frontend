@@ -1,0 +1,170 @@
+@import "styles/vars";
+@import "carousel/mixins";
+
+$card-width: 22rem;
+$card-height: 25rem;
+
+.carousel {
+    width: 85rem;
+    //height: 25rem;
+    margin: 3rem auto;
+
+    &__header {
+        display: flex;
+        margin-bottom: 1rem;
+        align-items: center;
+
+        &__icon {
+            display: inline-block;
+            background-color: $color-primary-dark;
+            color: $color-white;
+            padding: 0.4rem 1rem;
+            border-radius: 4px;
+            box-shadow: 1px 1px 1px rgba(0, 0, 0, .3);
+            margin-right: 1.7rem;
+        }
+
+        &__text {
+            &__title {
+                font-size: 1.6rem;
+                color: $color-primary
+            }
+
+            &__subtitle {
+                font-size: 1.3rem;
+                font-weight: 300;
+                color: $color-grey-light-2;
+            }
+        }
+    }
+
+    &__cards__container {
+        position: relative;
+        width: 100%;
+
+        .carousel__cards {
+            display: flex;
+            width: 100%;
+            overflow-x: auto;
+
+            // to show shadow and collection css
+            padding-bottom: 1rem;
+
+            // hide scrollbar
+            &::-webkit-scrollbar {
+                display: none;
+            }
+
+            .carousel__card {
+                position: relative;
+                background-color: $color-white;
+                width: $card-width;
+                height: $card-height;
+                box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+
+                &:not(:last-child) {
+                    margin-right: 1.5rem;
+                }
+
+                &__image {
+                    position: relative;
+                    width: $card-width;
+                    height: 13rem;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+
+                    &__info {
+                        position: absolute;
+                        z-index: 5;
+                        right: 0;
+                        bottom: 0;
+                        left: 0;
+
+                        display: flex;
+                        justify-content: space-between;
+
+                        background-color: rgba(0, 0, 0, .6);
+                        color: $color-white;
+                        font-size: .9rem;
+                        letter-spacing: .5px;
+                        font-weight: 300;
+                        padding: 0.2rem .7rem;
+                    }
+                }
+
+                &__content {
+                    padding: 1rem;
+                    font-weight: 500;
+
+                    &__title {
+                        color: $color-primary;
+                    }
+
+                    &__language {
+                        color: $color-grey-light-3;
+                        margin-top: 1rem;
+                        font-size: 1.2rem
+                    }
+                }
+
+                &--collection {
+                    &:before {
+                        @include cardCollection;
+                        z-index: -1;
+                        width: 98%;
+                        height: .4rem;
+                    }
+
+                    &:after {
+                        @include cardCollection;
+                        z-index: -2;
+                        width: 96%;
+                        height: .8rem;
+                    }
+                }
+            }
+        }
+
+        .carousel__cards__arrow {
+            position: absolute;
+            z-index: 10;
+            top: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: $card-height;
+            width: 4rem;
+            background-color: rgba(0, 0, 0, .4);
+            color: $color-white;
+            cursor: pointer;
+            transition: all .3s ease-in-out;
+            opacity: 0;
+
+            &--show {
+                display: flex;
+                opacity: 1;
+            }
+
+            .material-icons {
+                font-size: 4.5rem;
+                user-select: none;
+            }
+
+            &--prev {
+                left: 0;
+            }
+
+            &--next {
+                right: 0;
+            }
+
+            &:hover {
+                background-color: rgba(0, 0, 0, .6);
+            }
+        }
+    }
+}

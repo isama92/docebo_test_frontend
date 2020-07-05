@@ -1,115 +1,35 @@
-const carousel_cards = [
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'video',
-        duration: 77,
-        title: 'Welcome to Effective Time Management',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'elearning',
-        duration: 612,
-        title: 'Choosing The Best Audio Player Software For Your Computer',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'learning_plan',
-        duration: 300,
-        title: 'The Small Change That Creates Massive Results In Your Life',
-        cardinality: 'collection',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'video',
-        duration: 60,
-        title: 'Enhance Your Brand Potential With Giant Advertising Blimps',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'playlist',
-        duration: 259,
-        title: 'How To Write Better Advertising Copy...',
-        cardinality: 'collection',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'elearning',
-        duration: 937,
-        title: 'A Random Title',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'learning_plan',
-        duration: 821,
-        title: 'Just Another Random Title',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'elearning',
-        duration: 3600,
-        title: 'Lorem ipsum dolor sit amet',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'video',
-        duration: 612,
-        title: 'Consectetur adipiscing elit',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'learning_plan',
-        duration: 300,
-        title: 'Curabitur vel finibus elit',
-        cardinality: 'collection',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'video',
-        duration: 60,
-        title: 'Sit amet imperdiet sapien',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'playlist',
-        duration: 259,
-        title: 'Mauris ac semper erat, vitae faucibus libero',
-        cardinality: 'collection',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'elearning',
-        duration: 937,
-        title: 'Duis orci lacus',
-        cardinality: 'single',
-    },
-    {
-        image: 'https://loremflickr.com/400/400',
-        type: 'learning_plan',
-        duration: 821,
-        title: 'Sollicitudin sed pulvinar in',
-        cardinality: 'single',
-    },
-];
+'use strict';
 
 /**
- * Randomize array elements
- * @returns {Array}
+ * Generate a random card object
+ * @returns {Generator<{duration: (number), image: string, type: (string), title: string, cardinality: (string)}, void, *>}
  */
-Array.prototype.shuffle = function () {
-    for (let i = 0; i < this.length; i++) {
-        const r = Math.floor(Math.random() * (i + 1));
-        [this[i], this[r]] = [this[r], this[i]];
+function *generateCard() {
+    while(true) {
+        const type = card_types[random_number(0, card_types.length)];
+        const card = {
+            image: 'https://loremflickr.com/400/400/cats',
+            type: type.key,
+            duration: type.key !== 'elearning'? random_number(1, 30000) : undefined,
+            title: random_string(10, 4),
+            cardinality: card_cardinalities[random_number(0, card_cardinalities.length)],
+        }
+        yield card;
     }
-    return this;
-};
+}
+
+/**
+ * Generate [n] cards
+ * @param {number} n Number of cards to generate
+ * @returns {[]}
+ */
+const generateCards = n => {
+    const cards = [];
+    for(let i = 0; i < n; i++) {
+        cards.push(generateCard().next().value);
+    }
+    return cards;
+}
 
 /**
  * Stash carousel cards by a unique identificator
@@ -118,31 +38,38 @@ Array.prototype.shuffle = function () {
 const carousel_cards_cache = {};
 
 /**
- * Generate unique cards for a carousel and then get them when needed
- * @param carousel_id
- * @returns {array}
+ * Generate random cards for a carousel
+ * @param {string} carousel_id Cache key
+ * @param {int} n Number of cards to generate if not cached
+ * @returns {[]}
  */
-const getCardsByCarousel = carousel_id => {
+const getCardsByCarousel = (carousel_id, n) => {
+    const cards = generateCards(n);
+
+    // cache init if it doesn't exist
     if(typeof carousel_cards_cache[carousel_id] === 'undefined') {
-        carousel_cards_cache[carousel_id] = carousel_cards.slice().shuffle();
+        carousel_cards_cache[carousel_id] = [];
     }
-    return carousel_cards_cache[carousel_id];
+
+    carousel_cards_cache[carousel_id] = carousel_cards_cache[carousel_id].concat(cards);
+    return cards;
 };
 
 /**
  * Get a random list of n cards for a specific carousel
  * @param {string} carousel_id Carousel unique identificator
- * @param {int} n Number of cards to get
+ * @param {int} chunkSize The chunk size
  * @param {int} timeout Timeout in ms before to get the response
  * @returns {Promise} Promise that will resolve giving an array of cards
  */
-const getCards = (carousel_id, n, timeout = 1000) => {
+const getCards = (carousel_id, chunkSize, timeout = 1000) => {
     // promise to simulate delay
     return new Promise(resolve => {
         // timeout, adds delay
         setTimeout(() => {
-            // Get all the cards for [carousel_id] carousel and then get n elements
-            const cards = getCardsByCarousel(carousel_id).slice(0, n);
+            // get a random number of chunk of the specified size
+            const chunksToGet = random_number(2, 4);
+            const cards = getCardsByCarousel(carousel_id, chunkSize * chunksToGet);
             // "returns" the cards
             resolve(cards);
         }, timeout)
